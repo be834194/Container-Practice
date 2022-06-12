@@ -1,0 +1,18 @@
+version: '3.8' #スキーマバージョンの定義
+services: #実行したいサービス(またはコンテナ)一覧を定義
+  app: #サービス名
+    image: openjdk:17
+    ports:
+      - 8080:8080
+    tty: true
+    volumes: #[ソース:]ターゲット[:モード]
+      - ./server:/srv:cached
+    working_dir: /srv
+    build: #構築時に適用するオプション
+      context: ./server
+      dockerfile: Dockerfile
+    environment: #環境変数
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos

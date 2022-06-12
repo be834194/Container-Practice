@@ -1,18 +1,14 @@
 version: '3.8' #スキーマバージョンの定義
 services: #実行したいサービス(またはコンテナ)一覧を定義
   app: #サービス名
-    image: openjdk:17
-    ports:
+    image: openjdk:17 #コンテナ実行時に元となるイメージ
+    working_dir: /srv #作業ディレクトリの指定
+    ports: #ホスト側:コンテナ側 でポートを指定
       - 8080:8080
-    tty: true
-    volumes: #[ソース:]ターゲット[:モード]
-      - ./server:/srv:cached
-    working_dir: /srv
+    tty: true #仮想端末を配置するコマンド。コンテナが正常終了せず、起動したままになる
+    volumes: #Dockerのコンテナ内で作成したデータを永続化するための場所
+      #[ソース:]ターゲット[:モード]
+      - ./webapp:/srv:cached
     build: #構築時に適用するオプション
-      context: ./server
+      context: ./webapp
       dockerfile: Dockerfile
-    environment: #環境変数
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_DB: todos

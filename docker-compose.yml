@@ -1,7 +1,9 @@
 version: '3.8' #スキーマバージョンの定義
 services: #実行したいサービス(またはコンテナ)一覧を定義
   app: #サービス名
-    image: openjdk:17 #コンテナ実行時に元となるイメージ
+    build: #構築時に適用するオプション
+      context: ./webapp
+      dockerfile: Dockerfile
     working_dir: /srv #作業ディレクトリの指定
     ports: #ホスト側:コンテナ側 でポートを指定
       - 8080:8080
@@ -9,6 +11,24 @@ services: #実行したいサービス(またはコンテナ)一覧を定義
     volumes: #Dockerのコンテナ内で作成したデータを永続化するための場所
       #[ソース:]ターゲット[:モード]
       - ./webapp:/srv:cached
-    build: #構築時に適用するオプション
-      context: ./webapp
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - app-net
+  db:
+    build:
+      context: ./mysql
       dockerfile: Dockerfile
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: todo_user
+      MYSQL_ROOT_PASSWORD: docker_ci
+    networks:
+      - app-net
+networks: #ブリッジネットワーク
+  app-net:
+    driver: bridge

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.practice.container.repository.TodoRepository">
+
+    <select id = "findTodoList" resultType="com.practice.container.entity.Todo">
+        SELECT
+            todoid,todoname
+        FROM
+            todo
+        ORDER BY
+            todoid
+    </select>
+    
+    <insert id = "insertTodo" parameterType="com.practice.container.entity.Todo">
+        INSERT INTO
+            todo(todoname)
+        VALUES(#{todoName})
+    </insert>
+    
+    <delete id = "deleteTodo" parameterType = "int">
+        DELETE
+        FROM
+            todo
+        WHERE
+            todoid = #{todoId}
+    </delete>
+    
+</mapper>

@@ -1,6 +1,6 @@
 version: '3.8' #スキーマバージョンの定義
 services: #実行したいサービス(またはコンテナ)一覧を定義
-  app: #サービス名
+  app: #サービス名(spring boot)
     build: #構築時に適用するオプション
       context: ./webapp
       dockerfile: Dockerfile
@@ -16,17 +16,18 @@ services: #実行したいサービス(またはコンテナ)一覧を定義
         condition: service_started
     networks:
       - app-net
-  db:
-    build:
+  db: #サービス名(mysql)
+    build: #構築時に適用するオプション
       context: ./mysql
       dockerfile: Dockerfile
     volumes:
       - ./mysql/data:/var/lib/mysql
-    ports:
+    ports: #ローカルでmysqld.exeが動いているため、ホスト側のポートを3307に変更した
       - "3307:3306"
-    environment:
-      MYSQL_DATABASE: todo_user
-      MYSQL_ROOT_PASSWORD: docker_ci
+    environment: #別途作成した、データベースを操作するユーザ
+      MYSQL_DATABASE: todo_list
+      MYSQL_USER: todo_user
+      MYSQL_PASSWORD: docker_ci
     networks:
       - app-net
 networks: #ブリッジネットワーク

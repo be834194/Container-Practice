@@ -9,6 +9,7 @@ jobs:
           MYSQL_DATABASE: todo_list
           MYSQL_USER: todo_user
           MYSQL_PASSWORD: docker_ci
+          MYSQL_ROOT_PASSWORD: password
     working_directory: ~/Container-Practice/webapp #githubのリポジトリ
     steps:
       - checkout:

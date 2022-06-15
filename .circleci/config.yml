@@ -1,12 +1,14 @@
 version: 2.1
 
-orbs:
-  maven: circleci/maven@1.2.0
-
-workflows:
-  maven_test:
+workflows: 
+  java-ci: #ワークフローの名前
     jobs:
-      - maven/test:
-          executor:
-            name: "maven/default"
-            tag: "17.0.0"
+      - test #ジョブの名前
+
+jobs:
+  test: #ジョブの名前
+    docker:
+      - image: circleci/openjdk:17
+    working_directory: ./src
+    steps:
+      - run: ./mvnw test

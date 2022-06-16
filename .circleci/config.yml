@@ -1,0 +1,24 @@
+version: 2.1
+
+jobs:
+  test: #ジョブの名前
+    docker:
+      - image: cimg/openjdk:17.0.3
+      - image: mysql:8.0
+        environment:
+          MYSQL_DATABASE: todo_list
+          MYSQL_USER: todo_user
+          MYSQL_PASSWORD: docker_ci
+          MYSQL_ROOT_PASSWORD: password
+    working_directory: ~/Container-Practice/webapp #githubのリポジトリ
+    steps:
+      - checkout:
+          path: ~/Container-Practice
+      - run: 
+          name: maven/test
+          command: mvn test
+
+workflows: 
+  java-ci: #ワークフローの名前
+    jobs:
+      - test #ジョブの名前

@@ -9,12 +9,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import com.practice.container.entity.Todo;
 import com.practice.container.repository.TodoRepository;
@@ -22,18 +20,11 @@ import com.practice.container.repository.TodoRepository;
 @ExtendWith(MockitoExtension.class)
 public class TodoServiceTest {
 
-    @Mock
-    TodoRepository todoRepository;
+    //Mock
+    TodoRepository todoRepository = Mockito.mock(TodoRepository.class);
 
     @InjectMocks
     TodoService todoService;
-
-    @Before
-    public void setUp() {
-    	MockitoAnnotations.openMocks(this);
-        doNothing().when(todoRepository).insertTodo(any(Todo.class));
-        doNothing().when(todoRepository).deleteTodo(2);
-    }
 
     @Test
     public void getAllTodoList() throws Exception{
@@ -53,6 +44,7 @@ public class TodoServiceTest {
     public void isInserted() throws Exception{
         Todo todo = new Todo(3,"new task");
         String message = todoService.insertTodo(todo);
+        doNothing().when(todoRepository).insertTodo(any(Todo.class));
 
         assertEquals("タスクを追加しました", message);
         verify(todoRepository,times(1)).insertTodo(any(Todo.class));
@@ -61,6 +53,7 @@ public class TodoServiceTest {
     @Test
     public void isDeleted() throws Exception{
         String message = todoService.deleteTodo(2);
+        doNothing().when(todoRepository).deleteTodo(2);
 
         assertEquals("タスク2番を削除しました", message);
         verify(todoRepository,times(1)).deleteTodo(2);

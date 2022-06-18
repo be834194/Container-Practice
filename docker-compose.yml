@@ -1,14 +1,37 @@
 version: '3.8' #スキーマバージョンの定義
 services: #実行したいサービス(またはコンテナ)一覧を定義
-  app: #サービス名
-    image: openjdk:17 #コンテナ実行時に元となるイメージ
-    working_dir: /srv #作業ディレクトリの指定
-    ports: #ホスト側:コンテナ側 でポートを指定
-      - 8080:8080
-    tty: true #仮想端末を配置するコマンド。コンテナが正常終了せず、起動したままになる
-    volumes: #Dockerのコンテナ内で作成したデータを永続化するための場所
-      #[ソース:]ターゲット[:モード]
-      - ./webapp:/srv:cached
+  app: #サービス名(spring boot)
     build: #構築時に適用するオプション
       context: ./webapp
       dockerfile: Dockerfile
+    working_dir: /srv #作業ディレクトリの指定
+    ports: #ホスト側:コンテナ側 でポートを指定
+      - 8080:8080
+    tty: true #コンテナが正常終了せず、起動したままになる
+    volumes: #ローカルファイルをDockerコンテナ内にマウントし、データを永続化する
+      #[ソース:]ターゲット[:モード]
+      - ./webapp:/srv:cached
+    depends_on: #サービス間の依存関係を指定
+      db:
+        condition: service_started #db起動時に、appが起動する
+    networks:
+      - app-net
+  db: #サービス名(mysql)
+    image: mysql:8.0
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/mysql.cnf:/etc/mysql/conf.d/my.cnf
+    ports: #ローカルでmysqld.exeが動いているため、ホスト側のポートを3307に変更
+      - "3307:3306"
+    environment: #作成するDB名,ルートユーザのパスワード,DBを操作するユーザ,タイムゾーン
+      MYSQL_DATABASE: todo_list
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: todo_user
+      MYSQL_PASSWORD: docker_ci
+      TZ: Asia/Tokyo
+    networks:
+      - app-net
+networks: #ネットワークを設定し、コンテナ間の通信を行う
+  app-net: #ネットワーク名
+    driver: bridge

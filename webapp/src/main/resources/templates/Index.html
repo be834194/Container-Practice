@@ -7,5 +7,22 @@
 </head>
 <body>
 <h1>Hello Docker</h1>
+<div th:text="${message}"></div>
+<form th:action="@{/add}" method="post" th:object="${todoForm}">
+    <input type="text" th:field="*{todoName}">
+    <input type="submit" value="登録">
+</form>
+<table th:each="obj:${todoArr}">
+    <tr>
+        <td th:inline="text">[[${obj.todoId}]]:</td>
+        <td th:text="${obj.todoName}"></td>
+        <td>
+            <form th:action="@{/complete}" method="post">
+                <input type="hidden" name="todoId" th:value="${obj.todoId}">
+                <input type="submit" value="削除">
+            </form>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

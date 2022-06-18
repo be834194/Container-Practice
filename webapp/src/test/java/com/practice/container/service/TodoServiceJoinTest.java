@@ -1,4 +1,4 @@
-package com.practice.container.repository;
+package com.practice.container.service;
 
 import java.util.List;
 import static org.junit.Assert.assertEquals;
@@ -6,9 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +17,13 @@ import org.testcontainers.utility.DockerImageName;
 
 import com.practice.container.entity.Todo;
 
-@AutoConfigureTestDatabase(replace = Replace.NONE) //組み込みデータベースの設定を無効
-@MybatisTest
-@Testcontainers //テストコンテナを有効にする。宣言したコンテナは、テストメソッド間で共有される
+@SpringBootTest
 @Transactional
-public class TodoRepositoryTest {
+@Testcontainers //テストコンテナを有効にする。宣言したコンテナは、テストメソッド間で共有される
+public class TodoServiceJoinTest {
 
     @Autowired
-    TodoRepository todoRepository;
+    TodoService todoService;
 
     @Container
     private static final MySQLContainer<?> mysql = 
@@ -49,7 +46,7 @@ public class TodoRepositoryTest {
 
     @Test
     void getAllTodoList() throws Exception{
-        List<Todo> todoArr = todoRepository.findTodoList();
+        List<Todo> todoArr = todoService.findTodoList();
         assertEquals(2,todoArr.size());
         assertEquals(1,todoArr.get(0).getTodoId());
         assertEquals("服をクリーニングに出す",todoArr.get(0).getTodoName());
@@ -61,19 +58,21 @@ public class TodoRepositoryTest {
     void isInserted() throws Exception{
         Todo todo = new Todo();
         todo.setTodoName("腕立て15回を2セット");
-        todoRepository.insertTodo(todo);
+        String message = todoService.insertTodo(todo);
+        assertEquals("タスクを追加しました", message);
 
-        List<Todo> todoArr = todoRepository.findTodoList();
+        List<Todo> todoArr = todoService.findTodoList();
         assertEquals(3,todoArr.get(2).getTodoId());
         assertEquals("腕立て15回を2セット",todoArr.get(2).getTodoName());
     }
 
     @Test
     void isDeleted() throws Exception{
-        todoRepository.deleteTodo(2);
+        String message = todoService.deleteTodo(2);
+        assertEquals("タスク2番を削除しました", message);
 
-        List<Todo> todoArr = todoRepository.findTodoList();
+        List<Todo> todoArr = todoService.findTodoList();
         assertEquals(1,todoArr.size());
     }
-
+    
 }

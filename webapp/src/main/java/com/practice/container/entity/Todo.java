@@ -6,6 +6,14 @@ public class Todo {
 
     private String todoName;
 
+    public Todo(){
+    }
+
+    public Todo(int todoId, String todoName){
+        this.todoId = todoId;
+        this.todoName = todoName;
+    }
+
     public void setTodoId(int id){
         this.todoId = id;
     }
